@@ -72,6 +72,7 @@ def login():
             if (check_password_hash('scrypt:32768:8:1$' + rows[2],request.form.get("password"))):
                 session.permanent = True
                 session["user_id"]=request.form.get("usuario")
+                session["theme"] = "light"
                 logging.info("se autenticó correctamente")
                 return redirect(url_for('index'))
             else:
@@ -145,3 +146,11 @@ def logout():
     session.clear()
     logging.info("el usuario {} cerró su sesión".format(session.get("user_id")))
     return redirect(url_for('index'))
+
+
+@app.route('/change_theme', methods=['POST'])
+@require_login
+def change_theme():
+    tema_actual = session.get('theme')
+    session['theme'] = 'dark' if tema_actual == 'light' else 'light'
+    return '', 204
